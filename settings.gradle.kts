@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "HHTestTask"
 include(":app")
+include(":core:designsystem")
