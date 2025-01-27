@@ -46,6 +46,14 @@ object AppIcons {
         @Composable
         get() = ImageVector.vectorResource(R.drawable.ic_error)
 
+    val Empty: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.ic_empty)
+
+    val StarFavorite: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.ic_star_favorite)
+
     private val Location: ImageVector
         @Composable
         get() = ImageVector.vectorResource(R.drawable.ic_location)

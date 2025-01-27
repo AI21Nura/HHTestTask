@@ -15,6 +15,12 @@ val SfProDisplay = FontFamily(
 )
 
 val Typography = Typography(
+    //For TopBarTitle
+    headlineMedium = TextStyle(
+        fontFamily = SfProDisplay,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 32.sp
+    ),
     //Title 1
     titleLarge = TextStyle(
         fontFamily = SfProDisplay,
