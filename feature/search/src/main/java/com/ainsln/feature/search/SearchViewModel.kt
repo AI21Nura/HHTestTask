@@ -8,6 +8,7 @@ import com.ainsln.core.model.Offer
 import com.ainsln.core.model.ShortVacancy
 import com.ainsln.core.ui.state.UiState
 import com.ainsln.core.ui.state.toUiState
+import com.ainsln.core.ui.utils.IntentManager
 import com.ainsln.feature.search.state.SearchUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -27,6 +28,7 @@ import kotlin.math.max
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
+    private val intentManager: IntentManager
 ) : ViewModel() {
 
     private val vacanciesResult: MutableStateFlow<UiState<List<ShortVacancy>>> = MutableStateFlow(UiState.Loading)
@@ -74,6 +76,11 @@ class SearchViewModel @Inject constructor(
 
     fun showSnackbarMsg(msg: String?){
         _snackbarMsg.value = msg
+    }
+
+    fun openOfferLink(link: String, errorMsg: String){
+        val success = intentManager.openWebPage(link)
+        if (!success) _snackbarMsg.update { errorMsg }
     }
 
     companion object {

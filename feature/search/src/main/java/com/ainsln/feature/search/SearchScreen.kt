@@ -74,7 +74,8 @@ internal fun SearchScreen(
         onSearchQueryChange = viewModel::onSearchQueryChange,
         onMoreVacanciesClick = { viewModel.changeVacanciesScreen(true) },
         backToMainScreen = { viewModel.changeVacanciesScreen(false) },
-        showSnackbarMsg = viewModel::showSnackbarMsg
+        showSnackbarMsg = viewModel::showSnackbarMsg,
+        openOfferLink = viewModel::openOfferLink
     )
 }
 
@@ -86,6 +87,7 @@ internal fun SearchScreenContent(
     onMoreVacanciesClick: () -> Unit,
     backToMainScreen: () -> Unit,
     showSnackbarMsg: (String?) -> Unit,
+    openOfferLink: (String, String) -> Unit,
     contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp)
 ){
     Column(Modifier.padding(contentPadding)) {
@@ -106,7 +108,8 @@ internal fun SearchScreenContent(
                     onSearchQueryChange = onSearchQueryChange,
                     onRetryClick = onRetryClick,
                     onMoreVacanciesClick = onMoreVacanciesClick,
-                    showSnackbarMsg = showSnackbarMsg
+                    showSnackbarMsg = showSnackbarMsg,
+                    openOfferLink = openOfferLink
                 )
             }
         }
@@ -183,7 +186,8 @@ internal fun MainSearchContent(
     onSearchQueryChange: (String) -> Unit,
     onMoreVacanciesClick: () -> Unit,
     onRetryClick: () -> Unit,
-    showSnackbarMsg: (String?) -> Unit
+    showSnackbarMsg: (String?) -> Unit,
+    openOfferLink: (String, String) -> Unit
 ){
     Column(
         Modifier
@@ -210,6 +214,7 @@ internal fun MainSearchContent(
         OfferBlock(
             offersState = uiState.offersState,
             showSnackbarMsg = showSnackbarMsg,
+            openOfferLink = openOfferLink,
             Modifier.padding(bottom = 32.dp)
         )
         VacancyBlock(
@@ -225,13 +230,14 @@ internal fun MainSearchContent(
 internal fun OfferBlock(
     offersState: UiState<List<Offer>>,
     showSnackbarMsg: (String?) -> Unit,
+    openOfferLink: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ){
     Box(modifier) {
         when(offersState){
             is UiState.Loading -> ShimmerOfferList()
             is UiState.Failure -> showSnackbarMsg(stringResource(R.string.offers_error))
-            is UiState.Success -> OfferList(offersState.data)
+            is UiState.Success -> OfferList(offersState.data, openOfferLink)
         }
     }
 }
@@ -320,78 +326,59 @@ internal fun CompactVacancyList(
 @Preview
 @Composable
 private fun SearchScreenLoadingContentPreview(){
-    HHTestTaskTheme {
-        Surface(Modifier.fillMaxSize()) {
-            SearchScreenContent(
-                uiState = SearchUiState(
-                    offersState = UiState.Loading,
-                    vacanciesState = UiState.Loading
-                ),
-                onRetryClick = {},
-                onSearchQueryChange = {},
-                onMoreVacanciesClick = {},
-                backToMainScreen = {},
-                showSnackbarMsg = {}
-            )
-        }
-    }
+    UiStatePreview(
+        uiState = SearchUiState(
+            offersState = UiState.Loading,
+            vacanciesState = UiState.Loading
+        )
+    )
 }
 
 @Preview
 @Composable
 private fun SearchScreenErrorContentPreview(){
-    HHTestTaskTheme {
-        Surface(Modifier.fillMaxSize()) {
-            SearchScreenContent(
-                uiState = SearchUiState(
-                    offersState = UiState.Failure(AppException.UnknownError("")),
-                    vacanciesState = UiState.Failure(AppException.NetworkError(0,""))
-                ),
-                onRetryClick = {},
-                onSearchQueryChange = {},
-                onMoreVacanciesClick = {},
-                backToMainScreen = {},
-                showSnackbarMsg = {}
-            )
-        }
-    }
+    UiStatePreview(
+        uiState = SearchUiState(
+            offersState = UiState.Failure(AppException.UnknownError("")),
+            vacanciesState = UiState.Failure(AppException.NetworkError(0,""))
+        )
+    )
 }
 
 @Preview
 @Composable
 private fun SearchScreenSuccessContentPreview(){
-    HHTestTaskTheme {
-        Surface(Modifier.fillMaxSize()) {
-            SearchScreenContent(
-                uiState = SearchUiState(
-                    offersState = UiState.Success(offers),
-                    vacanciesState = UiState.Success(vacancies)
-                ),
-                onRetryClick = {},
-                onSearchQueryChange = {},
-                onMoreVacanciesClick = {},
-                backToMainScreen = {},
-                showSnackbarMsg = {}
-            )
-        }
-    }
+    UiStatePreview(
+        uiState = SearchUiState(
+            offersState = UiState.Success(offers),
+            vacanciesState = UiState.Success(vacancies)
+        )
+    )
 }
 
 @Preview
 @Composable
 private fun SearchScreenEmptyVacanciesContentPreview(){
+    UiStatePreview(
+        uiState = SearchUiState(
+            offersState = UiState.Success(offers),
+            vacanciesState = UiState.Success(emptyList())
+        )
+    )
+}
+
+@Composable
+private fun UiStatePreview(uiState: SearchUiState){
     HHTestTaskTheme {
         Surface(Modifier.fillMaxSize()) {
             SearchScreenContent(
-                uiState = SearchUiState(
-                    offersState = UiState.Success(offers),
-                    vacanciesState = UiState.Success(emptyList())
-                ),
+                uiState = uiState,
                 onRetryClick = {},
                 onSearchQueryChange = {},
                 onMoreVacanciesClick = {},
                 backToMainScreen = {},
-                showSnackbarMsg = {}
+                showSnackbarMsg = {},
+                openOfferLink = {_, _ -> }
             )
         }
     }

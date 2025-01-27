@@ -8,4 +8,5 @@
     <string name="back">Назад</string>
     <string name="by_search_match">По соответствию</string>
     <string name="offers_error">Не удалось загрузить блок рекомендаций</string>
+    <string name="activity_launch_error">Что-то пошло не так. Не удалось открыть ссылку</string>
 </resources>
