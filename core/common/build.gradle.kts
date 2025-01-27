@@ -1,11 +1,10 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
 }
 
 android {
-    namespace = "com.ainsln.core.ui"
+    namespace = "com.ainsln.core.common"
     compileSdk = 35
 
     defaultConfig {
@@ -27,10 +26,4 @@ android {
     kotlin {
         jvmToolchain(17)
     }
-}
-
-dependencies {
-    api(projects.core.designsystem)
-    api(projects.core.model)
-    implementation(projects.core.common)
 }
