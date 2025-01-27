@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="favorite_title">Избранное</string>
+    <string name="empty_favorites_placeholder">Добавьте вакансии в избранное</string>
+    <string name="empty_favorites_subtext">Вы можете вернуться к ним позже, чтобы откликнуться</string>
+</resources>
