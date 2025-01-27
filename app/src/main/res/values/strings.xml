@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">HHTestTask</string>
+
+    <string name="search_item">Поиск</string>
+    <string name="favorites_item">Избранное</string>
+    <string name="response_item">Отклики</string>
+    <string name="chat_item">Сообщения</string>
+    <string name="profile_item">Профиль</string>
 </resources>
