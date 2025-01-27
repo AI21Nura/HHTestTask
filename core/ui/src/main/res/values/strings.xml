@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <plurals name="vacancy_viewers">
         <item quantity="one">Вакансию просматривает %d человек</item>
         <item quantity="few">Вакансию просматривает %d человека</item>
         <item quantity="many">Вакансию просматривает %d человек</item>
+        <item quantity="other">Вакансию просматривает %d человек(а)</item>
     </plurals>
 
     <plurals name="vacancies_number">
         <item quantity="one">%d вакансия</item>
         <item quantity="few">%d вакансии</item>
-        <item quantity="many">%d вакансий</item>
+        <item quantity="other">%d вакансий</item>
     </plurals>
 
     <string name="apply_button">Откликнуться</string>

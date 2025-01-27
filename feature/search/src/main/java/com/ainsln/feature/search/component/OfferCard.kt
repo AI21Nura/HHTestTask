@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,6 +33,7 @@ import com.ainsln.core.model.Offer
 import com.ainsln.core.ui.component.ShimmerEffect
 import com.ainsln.core.ui.component.TextShimmerEffect
 import com.ainsln.feature.search.PreviewData
+import com.ainsln.feature.search.R
 
 @Composable
 internal fun OfferCard(
@@ -90,8 +92,10 @@ internal fun ShimmerOfferCard(
 @Composable
 internal fun OfferList(
     offers: List<Offer>,
+    openOfferLink: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ){
+    val errorUrlMsg = stringResource(R.string.activity_launch_error)
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
@@ -99,7 +103,7 @@ internal fun OfferList(
         items(offers){ offer ->
             OfferCard(
                 offer = offer,
-                onCardClick = {},
+                onCardClick = { openOfferLink(offer.link, errorUrlMsg) },
             )
         }
     }
@@ -129,7 +133,7 @@ private fun OfferCard(
         ),
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier
-            .size(132.dp, 120.dp)
+            .size(132.dp)
             .clickable { onCardClick() }
     ) {
         Column(

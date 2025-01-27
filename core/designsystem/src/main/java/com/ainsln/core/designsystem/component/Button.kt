@@ -173,7 +173,7 @@ fun FavoriteToggleButton(
     IconToggleButton(
         checked = checked,
         onCheckedChange = onCheckedChange,
-        modifier = Modifier.size(24.dp)
+        modifier = Modifier.size(28.dp)
     ) {
         if (checked)
             Icon(
