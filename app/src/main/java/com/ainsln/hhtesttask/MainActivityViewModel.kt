@@ -3,6 +3,7 @@ package com.ainsln.hhtesttask
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ainsln.core.common.result.DataResult
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -11,8 +12,12 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import javax.inject.Inject
 
-class MainActivityViewModel : ViewModel() {
+@HiltViewModel
+class MainActivityViewModel @Inject constructor(
+
+) : ViewModel() {
 
     val favoritesNumber: StateFlow<Int> = getFavoritesNumber().map { result ->
         if (result is DataResult.Success) result.data else 0

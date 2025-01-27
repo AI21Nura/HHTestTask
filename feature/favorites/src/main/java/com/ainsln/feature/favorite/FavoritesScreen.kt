@@ -20,7 +20,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.ainsln.core.common.result.AppException
 import com.ainsln.core.designsystem.component.SecondaryText
 import com.ainsln.core.designsystem.icon.AppIcons
@@ -36,7 +36,7 @@ import com.ainsln.core.ui.R as coreR
 
 @Composable
 internal fun FavoritesScreen(
-    viewModel: FavoritesViewModel = viewModel(factory = FavoritesViewModel.FACTORY)
+    viewModel: FavoritesViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     FavoritesScreenContent(uiState)

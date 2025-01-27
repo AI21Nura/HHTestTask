@@ -1,10 +1,7 @@
 package com.ainsln.feature.search
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.ainsln.core.common.result.AppException
 import com.ainsln.core.common.result.DataResult
 import com.ainsln.core.model.Offer
@@ -12,6 +9,7 @@ import com.ainsln.core.model.ShortVacancy
 import com.ainsln.core.ui.state.UiState
 import com.ainsln.core.ui.state.toUiState
 import com.ainsln.feature.search.state.SearchUiState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,9 +22,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import kotlin.math.max
 
-class SearchViewModel : ViewModel() {
+@HiltViewModel
+class SearchViewModel @Inject constructor(
+) : ViewModel() {
 
     private val vacanciesResult: MutableStateFlow<UiState<List<ShortVacancy>>> = MutableStateFlow(UiState.Loading)
 
@@ -77,11 +78,6 @@ class SearchViewModel : ViewModel() {
 
     companion object {
         const val COMPACT_VACANCIES_LIST_SIZE = 3
-        val FACTORY: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                SearchViewModel()
-            }
-        }
     }
 
     //TEMPORARY
