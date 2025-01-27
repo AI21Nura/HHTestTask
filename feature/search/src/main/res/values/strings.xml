@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vacancies_more">Еще %s</string>
+    <string name="filters">Фильтры поиска</string>
+    <string name="search_placeholder">Должность, ключевые слова</string>
+    <string name="search_suitable_placeholder">Должность по подходящим вакансиям</string>
+    <string name="vacancies_for_you">Вакансии для вас</string>
+    <string name="back">Назад</string>
+    <string name="by_search_match">По соответствию</string>
+    <string name="offers_error">Не удалось загрузить блок рекомендаций</string>
+</resources>
