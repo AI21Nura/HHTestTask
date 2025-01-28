@@ -44,4 +44,6 @@ dependencies {
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
+
+    implementation(projects.core.common)
 }
