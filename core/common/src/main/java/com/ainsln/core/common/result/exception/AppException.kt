@@ -1,4 +1,4 @@
-package com.ainsln.core.common.result
+package com.ainsln.core.common.result.exception
 
 sealed interface AppException {
     data class NetworkError(val code: Int, val msg: String?) : AppException
