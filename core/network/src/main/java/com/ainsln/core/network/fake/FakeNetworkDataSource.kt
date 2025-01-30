@@ -23,6 +23,14 @@ class FakeNetworkDataSource @Inject constructor(
         return getResult { it.offers }
     }
 
+    override suspend fun getVacancyById(id: String): Result<VacancyDTO> {
+        return try {
+            getResult { it.vacancies.first { v -> v.id == id } }
+        } catch (e: Throwable){
+            Result.failure(e)
+        }
+    }
+
     private fun <T> getResult(mapper: (ResponseDTO) -> T): Result<T> {
         return try {
             Result.success(mapper(getData()))
