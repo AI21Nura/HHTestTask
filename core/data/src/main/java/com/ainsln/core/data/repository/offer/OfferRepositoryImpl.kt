@@ -11,11 +11,10 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
-import javax.inject.Named
 
 internal class OfferRepositoryImpl @Inject constructor(
     @IODispatcher private val dispatcher: CoroutineDispatcher,
-    @Named("FakeNetwork") private val networkDataSource: NetworkDataSource,
+    private val networkDataSource: NetworkDataSource,
     private val exceptionHandler: ExceptionHandler,
     private val offerMapper: OfferMapper
 ) : OfferRepository {
