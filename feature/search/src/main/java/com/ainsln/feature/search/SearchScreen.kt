@@ -26,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,6 +46,7 @@ import com.ainsln.core.ui.component.vacancy.ErrorVacancyCard
 import com.ainsln.core.ui.component.vacancy.ShimmerVacancyList
 import com.ainsln.core.ui.component.vacancy.VacancyCard
 import com.ainsln.core.ui.component.vacancy.VacancyLazyList
+import com.ainsln.core.ui.state.UiEvent
 import com.ainsln.core.ui.state.UiState
 import com.ainsln.feature.search.PreviewData.vacancies
 import com.ainsln.feature.search.PreviewData.offers
@@ -62,13 +64,17 @@ internal fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel()
 ){
     val uiState by viewModel.uiState.collectAsState()
-    val snackbarMessage by viewModel.snackbarMsg.collectAsState()
+    val uiEvent by viewModel.uiEvent.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
+    val context = LocalContext.current
 
-    LaunchedEffect(snackbarMessage) {
-        snackbarMessage?.let {
-            showSnackbarMsg(it)
-            viewModel.showSnackbarMsg(null)
+    LaunchedEffect(uiEvent) {
+        uiEvent?.let { event ->
+            when(event){
+                is UiEvent.OffersError -> showSnackbarMsg(context.getString(R.string.offers_error))
+                is UiEvent.IntentError -> showSnackbarMsg(context.getString(R.string.activity_launch_error))
+            }
+            viewModel.sendEvent(null)
         }
     }
     PullToRefreshBox(
@@ -82,7 +88,6 @@ internal fun SearchScreen(
             onMoreVacanciesClick = { viewModel.changeVacanciesScreen(true) },
             backToMainScreen = { viewModel.changeVacanciesScreen(false) },
             onFavoriteClick = viewModel::toggleFavorite,
-            showSnackbarMsg = viewModel::showSnackbarMsg,
             openOfferLink = viewModel::openOfferLink
         )
     }
@@ -96,8 +101,7 @@ internal fun SearchScreenContent(
     onMoreVacanciesClick: () -> Unit,
     backToMainScreen: () -> Unit,
     onFavoriteClick: (ShortVacancy) -> Unit,
-    showSnackbarMsg: (String?) -> Unit,
-    openOfferLink: (String, String) -> Unit,
+    openOfferLink: (String) -> Unit,
     contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp)
 ){
     Column(Modifier.padding(contentPadding)) {
@@ -120,7 +124,6 @@ internal fun SearchScreenContent(
                     onRetryClick = onRetryClick,
                     onFavoriteClick = onFavoriteClick,
                     onMoreVacanciesClick = onMoreVacanciesClick,
-                    showSnackbarMsg = showSnackbarMsg,
                     openOfferLink = openOfferLink
                 )
             }
@@ -201,8 +204,7 @@ internal fun MainSearchContent(
     onMoreVacanciesClick: () -> Unit,
     onRetryClick: () -> Unit,
     onFavoriteClick: (ShortVacancy) -> Unit,
-    showSnackbarMsg: (String?) -> Unit,
-    openOfferLink: (String, String) -> Unit
+    openOfferLink: (String) -> Unit
 ){
     Column(
         Modifier
@@ -228,7 +230,6 @@ internal fun MainSearchContent(
         )
         OfferBlock(
             offersState = uiState.offersState,
-            showSnackbarMsg = showSnackbarMsg,
             openOfferLink = openOfferLink,
             Modifier.padding(bottom = 32.dp)
         )
@@ -245,14 +246,13 @@ internal fun MainSearchContent(
 @Composable
 internal fun OfferBlock(
     offersState: UiState<List<Offer>>,
-    showSnackbarMsg: (String?) -> Unit,
-    openOfferLink: (String, String) -> Unit,
+    openOfferLink: (String) -> Unit,
     modifier: Modifier = Modifier
 ){
     Box(modifier) {
         when(offersState){
             is UiState.Loading -> ShimmerOfferList()
-            is UiState.Failure -> showSnackbarMsg(stringResource(R.string.offers_error))
+            is UiState.Failure -> {}
             is UiState.Success -> OfferList(offersState.data, openOfferLink)
         }
     }
@@ -404,8 +404,7 @@ private fun UiStatePreview(uiState: SearchUiState){
                 onSearchQueryChange = {},
                 onMoreVacanciesClick = {},
                 backToMainScreen = {},
-                showSnackbarMsg = {},
-                openOfferLink = {_, _ -> },
+                openOfferLink = {},
                 onFavoriteClick = {}
             )
         }
