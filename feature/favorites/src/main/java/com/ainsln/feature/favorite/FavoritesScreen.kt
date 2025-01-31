@@ -21,7 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.ainsln.core.common.result.AppException
+import com.ainsln.core.common.result.exception.AppException
 import com.ainsln.core.designsystem.component.SecondaryText
 import com.ainsln.core.designsystem.icon.AppIcons
 import com.ainsln.core.designsystem.theme.HHTestTaskTheme
@@ -39,13 +39,19 @@ internal fun FavoritesScreen(
     viewModel: FavoritesViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    FavoritesScreenContent(uiState)
+    FavoritesScreenContent(
+        uiState = uiState,
+        onFavoriteClick = viewModel::toggleFavorite,
+        onRetryClick = viewModel::loadFavorites
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun FavoritesScreenContent(
     uiState: UiState<List<ShortVacancy>>,
+    onFavoriteClick: (ShortVacancy) -> Unit,
+    onRetryClick: () -> Unit,
     contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp)
 ) {
     Scaffold(
@@ -67,13 +73,14 @@ internal fun FavoritesScreenContent(
                     ErrorBlock(
                         e = uiState.e,
                         compact = false,
-                        onRetryClick = {},
+                        onRetryClick = onRetryClick,
                         modifier = Modifier.fillMaxHeight(0.6f)
                     )
                 }
                 is UiState.Success -> {
                     FavoritesList(
                         favorites = uiState.data,
+                        onFavoriteClick = onFavoriteClick,
                         modifier = Modifier.padding(contentPadding)
                     )
                 }
@@ -85,6 +92,7 @@ internal fun FavoritesScreenContent(
 @Composable
 internal fun FavoritesList(
     favorites: List<ShortVacancy>,
+    onFavoriteClick: (ShortVacancy) -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (favorites.isNotEmpty()) {
@@ -99,6 +107,7 @@ internal fun FavoritesList(
                     )
                 )
             },
+            onFavoriteClick = onFavoriteClick,
             modifier = modifier
         )
     } else {
@@ -116,7 +125,7 @@ internal fun FavoritesList(
 private fun FavoritesScreenContentSuccessPreview() {
     HHTestTaskTheme {
         Surface(Modifier.fillMaxSize()) {
-            FavoritesScreenContent(UiState.Success(PreviewData.vacancies))
+            UiStatePreview(UiState.Success(PreviewData.vacancies))
         }
     }
 }
@@ -126,7 +135,7 @@ private fun FavoritesScreenContentSuccessPreview() {
 private fun FavoritesScreenContentEmptyPreview() {
     HHTestTaskTheme {
         Surface(Modifier.fillMaxSize()) {
-            FavoritesScreenContent(UiState.Success(emptyList()))
+            UiStatePreview(UiState.Success(emptyList()))
         }
     }
 }
@@ -136,7 +145,7 @@ private fun FavoritesScreenContentEmptyPreview() {
 private fun FavoritesScreenContentLoadingPreview() {
     HHTestTaskTheme {
         Surface(Modifier.fillMaxSize()) {
-            FavoritesScreenContent(UiState.Loading)
+            UiStatePreview(UiState.Loading)
         }
     }
 }
@@ -146,7 +155,20 @@ private fun FavoritesScreenContentLoadingPreview() {
 private fun FavoritesScreenContentErrorPreview() {
     HHTestTaskTheme {
         Surface(Modifier.fillMaxSize()) {
-            FavoritesScreenContent(UiState.Failure(AppException.DatabaseError("")))
+            UiStatePreview(UiState.Failure(AppException.DatabaseError("")))
+        }
+    }
+}
+
+@Composable
+private fun UiStatePreview(uiState: UiState<List<ShortVacancy>>){
+    HHTestTaskTheme {
+        Surface(Modifier.fillMaxSize()) {
+            FavoritesScreenContent(
+                uiState = uiState,
+                onFavoriteClick = {},
+                onRetryClick = {}
+            )
         }
     }
 }

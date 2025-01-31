@@ -35,6 +35,8 @@ android {
 dependencies {
     implementation(projects.core.ui)
     implementation(projects.core.common)
+    implementation(projects.core.data)
+
     implementation(libs.kotlinx.serialization)
     implementation(libs.androix.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
