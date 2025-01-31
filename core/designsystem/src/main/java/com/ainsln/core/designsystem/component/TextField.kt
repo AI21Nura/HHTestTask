@@ -19,8 +19,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ainsln.core.designsystem.icon.AppIcons
@@ -35,13 +39,17 @@ fun SearchTextField(
     leadingIcon: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     InputTextField(
         value = value,
         onValueChange = onValueChange,
         placeholder = {
             Text(
                 text = placeholderText,
-                color = MaterialTheme.colorScheme.outline
+                color = MaterialTheme.colorScheme.outline,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         },
         leadingIcon = leadingIcon,
@@ -50,13 +58,18 @@ fun SearchTextField(
             unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
+            unfocusedIndicatorColor = Color.Transparent,
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
         ),
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Search,
         ),
         keyboardActions = KeyboardActions(
-            onSearch = { onSearchClick(value) },
+            onSearch = {
+                keyboardController?.hide()
+                onSearchClick(value)
+            },
         ),
         singleLine = true,
         modifier = modifier
@@ -93,7 +106,9 @@ internal fun InputTextField(
         enabled = enabled,
         singleLine = singleLine,
         keyboardActions = keyboardActions,
-        keyboardOptions = keyboardOptions
+        keyboardOptions = keyboardOptions,
+        textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface),
+        cursorBrush = SolidColor(MaterialTheme.colorScheme.outline)
     ) { innerTextField ->
 
         TextFieldDefaults.DecorationBox(
