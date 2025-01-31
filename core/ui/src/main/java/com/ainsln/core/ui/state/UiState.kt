@@ -1,6 +1,6 @@
 package com.ainsln.core.ui.state
 
-import com.ainsln.core.common.result.AppException
+import com.ainsln.core.common.result.exception.AppException
 import com.ainsln.core.common.result.DataResult
 
 sealed interface UiState<out T> {

@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.ainsln.core.common.result.AppException
+import com.ainsln.core.common.result.exception.AppException
 import com.ainsln.core.designsystem.component.SmallButton
 import com.ainsln.core.designsystem.icon.AppIcons
 import com.ainsln.core.ui.R

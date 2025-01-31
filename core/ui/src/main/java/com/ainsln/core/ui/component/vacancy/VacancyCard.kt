@@ -21,9 +21,10 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.ainsln.core.common.result.AppException
+import com.ainsln.core.common.result.exception.AppException
 import com.ainsln.core.designsystem.component.FavoriteToggleButton
 import com.ainsln.core.designsystem.component.MediumButton
+import com.ainsln.core.designsystem.component.SafeText
 import com.ainsln.core.designsystem.component.SecondaryText
 import com.ainsln.core.designsystem.component.SelectedText
 import com.ainsln.core.designsystem.icon.AppIcons
@@ -41,7 +42,7 @@ import java.util.Locale
 fun VacancyCard(
     vacancy: ShortVacancy,
     onVacancyClick: (String) -> Unit,
-    onFavoriteClick: (String) -> Unit,
+    onFavoriteClick: (ShortVacancy) -> Unit,
     onApplyClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -56,7 +57,7 @@ fun VacancyCard(
             )
             FavoriteToggleButton(
                 checked = vacancy.isFavorite,
-                onCheckedChange = { onFavoriteClick(vacancy.id) }
+                onCheckedChange = { onFavoriteClick(vacancy) }
             )
         }
         MediumButton(
@@ -166,12 +167,10 @@ private fun VacancyInfo(
             style = MaterialTheme.typography.titleSmall
         )
 
-        vacancy.salaryShort?.let { salary ->
-            Text(
-                text = salary,
-                style = MaterialTheme.typography.titleMedium
-            )
-        }
+        SafeText(
+            text = vacancy.salaryShort,
+            style = MaterialTheme.typography.titleMedium
+        )
 
         CompanyBlock(vacancy.town, vacancy.company)
 
@@ -184,7 +183,7 @@ private fun VacancyInfo(
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.outline
             )
-            Text(vacancy.experienceText)
+            SafeText(vacancy.experiencePreview)
         }
 
         SecondaryText(
@@ -202,11 +201,11 @@ private fun publicationDate(date: Date): String {
 
 @Composable
 private fun CompanyBlock(
-    city: String,
+    city: String?,
     companyName: String
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text(text = city)
+        SafeText(city)
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -234,7 +233,7 @@ private fun VacancyCardPreview() {
                     salaryShort = "20 000 до 50 000 ₽",
                     town = "Минкс",
                     company = "Мобирикс",
-                    experienceText = "Опыт от 1 до 3 лет",
+                    experiencePreview = "Опыт от 1 до 3 лет",
                     publishedDate = Date(System.currentTimeMillis()),
                     isFavorite = false,
                     lookingNumber = 4

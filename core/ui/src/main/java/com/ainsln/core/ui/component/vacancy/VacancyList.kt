@@ -14,6 +14,7 @@ import com.ainsln.core.model.ShortVacancy
 fun VacancyLazyList(
     vacancies: List<ShortVacancy>,
     header: @Composable () -> Unit,
+    onFavoriteClick: (ShortVacancy) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(bottom = 16.dp)
 ){
@@ -28,8 +29,8 @@ fun VacancyLazyList(
             VacancyCard(
                 onVacancyClick = {},
                 vacancy = vacancy,
-                onFavoriteClick = {},
-                onApplyClick = {},
+                onFavoriteClick = onFavoriteClick,
+                onApplyClick = {}
             )
         }
     }
