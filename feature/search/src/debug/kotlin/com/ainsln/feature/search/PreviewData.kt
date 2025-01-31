@@ -44,7 +44,7 @@ object PreviewData {
             salaryShort = null,
             town = "Минск",
             company = "Мобирикс",
-            experienceText = "Опыт от 1 до 3 лет",
+            experiencePreview = "Опыт от 1 до 3 лет",
             publishedDate =parseDate("2024-02-20")
         ),
         ShortVacancy(
@@ -55,7 +55,7 @@ object PreviewData {
             salaryShort = "20 000 до 50 000 ₽",
             town = "Казань",
             company = "Шафигуллин Шакир",
-            experienceText = "Опыт от 1 до 3 лет",
+            experiencePreview = "Опыт от 1 до 3 лет",
             publishedDate = parseDate("2024-03-06")
         ),
         ShortVacancy(
@@ -66,7 +66,7 @@ object PreviewData {
             salaryShort = null,
             town = "Казань",
             company = "Aston",
-            experienceText = "Опыт от 3 до 6 лет",
+            experiencePreview = "Опыт от 3 до 6 лет",
             publishedDate = parseDate("2024-02-28")
         ),
         ShortVacancy(
@@ -77,7 +77,7 @@ object PreviewData {
             salaryShort = "от 60 000 ₽",
             town = "Казань",
             company = "Алабуга. Маркетинг и PR",
-            experienceText = "Без опыта",
+            experiencePreview = "Без опыта",
             publishedDate = parseDate("2024-03-02")
         ),
         ShortVacancy(
@@ -88,7 +88,7 @@ object PreviewData {
             salaryShort = null,
             town = "Минск",
             company = "ПАО Ростелеком",
-            experienceText = "Опыт от 3 до 6 лет",
+            experiencePreview = "Опыт от 3 до 6 лет",
             publishedDate = parseDate("2024-02-19")
         ),
         ShortVacancy(
@@ -99,7 +99,7 @@ object PreviewData {
             salaryShort = null,
             town = "Минск",
             company = "TravelLine",
-            experienceText = "Опыт от 3 до 6 лет",
+            experiencePreview = "Опыт от 3 до 6 лет",
             publishedDate = parseDate("2024-02-02")
         )
     )

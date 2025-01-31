@@ -58,9 +58,7 @@ internal fun OfferCard(
                 overflow = TextOverflow.Ellipsis
             )
 
-            offer.selectedText?.let {
-                SelectedText(it)
-            }
+            SelectedText(offer.selectedText)
         },
         onCardClick = onCardClick,
         modifier = modifier

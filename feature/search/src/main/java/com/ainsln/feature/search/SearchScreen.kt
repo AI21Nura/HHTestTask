@@ -14,11 +14,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -29,7 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.ainsln.core.common.result.AppException
+import com.ainsln.core.common.result.exception.AppException
 import com.ainsln.core.designsystem.component.BigButton
 import com.ainsln.core.designsystem.component.SecondaryText
 import com.ainsln.core.designsystem.component.TextButton
@@ -53,6 +55,7 @@ import com.ainsln.feature.search.component.ShimmerOfferList
 import com.ainsln.feature.search.state.SearchUiState
 import com.ainsln.core.ui.R.plurals as plurals
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SearchScreen(
     showSnackbarMsg: suspend (String) -> Unit,
@@ -60,6 +63,7 @@ internal fun SearchScreen(
 ){
     val uiState by viewModel.uiState.collectAsState()
     val snackbarMessage by viewModel.snackbarMsg.collectAsState()
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
 
     LaunchedEffect(snackbarMessage) {
         snackbarMessage?.let {
@@ -67,16 +71,21 @@ internal fun SearchScreen(
             viewModel.showSnackbarMsg(null)
         }
     }
-
-    SearchScreenContent(
-        uiState = uiState,
-        onRetryClick = viewModel::loadVacancies,
-        onSearchQueryChange = viewModel::onSearchQueryChange,
-        onMoreVacanciesClick = { viewModel.changeVacanciesScreen(true) },
-        backToMainScreen = { viewModel.changeVacanciesScreen(false) },
-        showSnackbarMsg = viewModel::showSnackbarMsg,
-        openOfferLink = viewModel::openOfferLink
-    )
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = viewModel::loadUiState,
+    ) {
+        SearchScreenContent(
+            uiState = uiState,
+            onRetryClick = viewModel::loadVacancies,
+            onSearchQueryChange = viewModel::onSearchQueryChange,
+            onMoreVacanciesClick = { viewModel.changeVacanciesScreen(true) },
+            backToMainScreen = { viewModel.changeVacanciesScreen(false) },
+            onFavoriteClick = viewModel::toggleFavorite,
+            showSnackbarMsg = viewModel::showSnackbarMsg,
+            openOfferLink = viewModel::openOfferLink
+        )
+    }
 }
 
 @Composable
@@ -86,6 +95,7 @@ internal fun SearchScreenContent(
     onSearchQueryChange: (String) -> Unit,
     onMoreVacanciesClick: () -> Unit,
     backToMainScreen: () -> Unit,
+    onFavoriteClick: (ShortVacancy) -> Unit,
     showSnackbarMsg: (String?) -> Unit,
     openOfferLink: (String, String) -> Unit,
     contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp)
@@ -100,13 +110,15 @@ internal fun SearchScreenContent(
                     vacanciesState = uiState.vacanciesState,
                     searchQuery = uiState.searchQuery,
                     onSearchQueryChange = onSearchQueryChange,
-                    backToMainScreen = backToMainScreen
+                    backToMainScreen = backToMainScreen,
+                    onFavoriteClick = onFavoriteClick
                 )
             } else {
                 MainSearchContent(
                     uiState = uiState,
                     onSearchQueryChange = onSearchQueryChange,
                     onRetryClick = onRetryClick,
+                    onFavoriteClick = onFavoriteClick,
                     onMoreVacanciesClick = onMoreVacanciesClick,
                     showSnackbarMsg = showSnackbarMsg,
                     openOfferLink = openOfferLink
@@ -122,6 +134,7 @@ internal fun ExpandedVacanciesContent(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     backToMainScreen: () -> Unit,
+    onFavoriteClick: (ShortVacancy) -> Unit,
     modifier: Modifier = Modifier
 ){
     BackHandler { backToMainScreen() }
@@ -173,7 +186,8 @@ internal fun ExpandedVacanciesContent(
                             )
                         }
                     },
-                    vacancies = vacanciesState.data
+                    vacancies = vacanciesState.data,
+                    onFavoriteClick = onFavoriteClick
                 )
             }
         }
@@ -186,6 +200,7 @@ internal fun MainSearchContent(
     onSearchQueryChange: (String) -> Unit,
     onMoreVacanciesClick: () -> Unit,
     onRetryClick: () -> Unit,
+    onFavoriteClick: (ShortVacancy) -> Unit,
     showSnackbarMsg: (String?) -> Unit,
     openOfferLink: (String, String) -> Unit
 ){
@@ -221,6 +236,7 @@ internal fun MainSearchContent(
             vacanciesState = uiState.vacanciesState,
             numberOfMoreVacancies = uiState.numberOfMoreVacancies,
             onRetryClick = onRetryClick,
+            onFavoriteClick = onFavoriteClick,
             onMoreVacanciesClick = onMoreVacanciesClick
         )
     }
@@ -247,6 +263,7 @@ internal fun VacancyBlock(
     vacanciesState: UiState<List<ShortVacancy>>,
     numberOfMoreVacancies: Int,
     onRetryClick: () -> Unit,
+    onFavoriteClick: (ShortVacancy) -> Unit,
     onMoreVacanciesClick: () -> Unit,
     modifier: Modifier = Modifier
 ){
@@ -265,7 +282,12 @@ internal fun VacancyBlock(
                     onRetryClick = onRetryClick
                 )
             }
-            is UiState.Success -> VacancyBlockContent(vacanciesState.data.take(COMPACT_VACANCIES_LIST_SIZE), numberOfMoreVacancies, onMoreVacanciesClick)
+            is UiState.Success -> VacancyBlockContent(
+                vacancies = vacanciesState.data.take(COMPACT_VACANCIES_LIST_SIZE),
+                numberOfMoreVacancies = numberOfMoreVacancies,
+                onMoreVacanciesClick = onMoreVacanciesClick,
+                onFavoriteClick = onFavoriteClick
+            )
         }
     }
 }
@@ -275,10 +297,14 @@ internal fun VacancyBlockContent(
     vacancies: List<ShortVacancy>,
     numberOfMoreVacancies: Int,
     onMoreVacanciesClick: () -> Unit,
+    onFavoriteClick: (ShortVacancy) -> Unit,
     modifier: Modifier = Modifier
 ){
     Column(modifier) {
-        CompactVacancyList(vacancies)
+        CompactVacancyList(
+            vacancies = vacancies,
+            onFavoriteClick = onFavoriteClick
+        )
         if (numberOfMoreVacancies > 0){
             BigButton(
                 text = stringResource(
@@ -301,6 +327,7 @@ internal fun VacancyBlockContent(
 @Composable
 internal fun CompactVacancyList(
     vacancies: List<ShortVacancy>,
+    onFavoriteClick: (ShortVacancy) -> Unit,
     modifier: Modifier = Modifier
 ){
     Column(
@@ -312,8 +339,8 @@ internal fun CompactVacancyList(
                 VacancyCard(
                     onVacancyClick = {},
                     vacancy = vacancy,
-                    onFavoriteClick = {},
-                    onApplyClick = {},
+                    onFavoriteClick = onFavoriteClick,
+                    onApplyClick = {}
                 )
             }
         } else {
@@ -378,7 +405,8 @@ private fun UiStatePreview(uiState: SearchUiState){
                 onMoreVacanciesClick = {},
                 backToMainScreen = {},
                 showSnackbarMsg = {},
-                openOfferLink = {_, _ -> }
+                openOfferLink = {_, _ -> },
+                onFavoriteClick = {}
             )
         }
     }
